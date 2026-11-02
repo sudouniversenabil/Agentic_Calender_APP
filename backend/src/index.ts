@@ -3,6 +3,7 @@ import 'dotenv/config'
 import cors from 'cors'
 import  express from 'express'
 import { success } from 'zod'
+import { getPool } from './db/pool.js'
 
 const app = express()
 const port = Number(process.env.PORT)|| 4000
@@ -16,12 +17,17 @@ app.use(
 )
 app.use(express.json())
 app.get("/health",async (_req,res)=>{
+    console.log("hallo world")
     try {
-        res.json({status: 'ok',service:'agentic-calender-app'})
+        await getPool().query("SELECT 1")
+        res.json({status: 'ok',service:'agentic-calender-app',database : 'up'})
     } catch (error) {
-        res.status(500).json({
+        res.status(503).json({
+            Err : error,
             success:false,
+            service:'agentic-calender-app',
             meassage:"internal server error",
+            database : 'down'
         })
     }
 })
